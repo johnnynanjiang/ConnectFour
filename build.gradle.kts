@@ -18,7 +18,6 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib", kotlinVersion))
-    compile(kotlin("stdlib-jdk7", kotlinVersion))
     compile(kotlin("stdlib-jdk8", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 }
