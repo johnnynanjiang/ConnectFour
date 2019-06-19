@@ -1,7 +1,7 @@
 package io.github.johnnynanjiang.glamcorner
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 internal class ConnectFourTest {
     @Test
