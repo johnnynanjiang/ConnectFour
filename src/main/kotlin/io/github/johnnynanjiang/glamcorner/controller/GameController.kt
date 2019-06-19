@@ -3,31 +3,23 @@ package io.github.johnnynanjiang.glamcorner.controller
 import io.github.johnnynanjiang.glamcorner.model.*
 import io.github.johnnynanjiang.glamcorner.view.BoardView
 import java.lang.IllegalArgumentException
-import java.lang.Math.random
 
 class GameController {
-    private companion object {
-        const val MINIMUM_COLUMN_INDEX = 0
-        const val MAXIMUM_COLUMN_INDEX = 6
-        const val MINIMUM_ROW_INDEX = 0
-        const val MAXIMUM_ROW_INDEX = 5
-
-        const val TEXT_HELP = """
+    companion object {
+        private const val TEXT_HELP = """
 - type in column number straight away, e.g. 1
 - type q to quit the game
 - type h for this help
 """
-        const val TEXT_QUIT = "Quit the game!"
+        private const val TEXT_QUIT = "Quit the game!"
 
-        const val ERROR_INVALID_COLUMN = "Input should be a valid integer between 0 and %s"
-        const val ERROR_COLUMN_NUMBER_OUT_OF_RANGE = "Column number out of range, should be between 0 and %s"
-        const val ERROR_COLUMN_FULL = "Column %s is full"
-        const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
+        private const val ERROR_INVALID_COLUMN = "Input should be a valid integer between 0 and %s"
+        private const val ERROR_COLUMN_NUMBER_OUT_OF_RANGE = "Column number out of range, should be between 0 and %s"
+        private const val ERROR_COLUMN_FULL = "Column %s is full"
+        private const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
     }
 
-    private val board = Board(column = MAXIMUM_COLUMN_INDEX + 1, row = MAXIMUM_ROW_INDEX + 1)
-
-    fun draw() = BoardView(board = board).draw()
+    private val board = Board(column = 7, row = 6)
 
     fun run() {
         var quit = false
@@ -50,7 +42,7 @@ class GameController {
         } while (!quit)
     }
 
-    fun performAction(input: String) {
+    private fun performAction(input: String) {
         val col = validate(input)
         updateBoard(col)
         draw()
@@ -58,12 +50,14 @@ class GameController {
         draw()
     }
 
-    fun validate(input: String): Int {
+    private fun validate(input: String): Int {
         val col = checkIfValidInt(input)
         checkIfOutOfRange(col)
         checkIfColumnFull(col)
         return col
     }
+
+    private fun draw() = BoardView(board = board).draw()
 
     private fun promptForPlayerInput(): String {
         println("")
@@ -80,25 +74,25 @@ class GameController {
                 input.toInt()
             } catch (e: NumberFormatException) {
                 throw IllegalArgumentException(
-                        String.format(ERROR_INVALID_COLUMN, MAXIMUM_COLUMN_INDEX))
+                        String.format(ERROR_INVALID_COLUMN, board.maxColumnIndex))
             }
 
     private fun checkIfOutOfRange(col: Int) {
-        if (col < MINIMUM_COLUMN_INDEX || col > board.column) {
+        if (col < board.minColumnIndex || col > board.column) {
             throw IllegalArgumentException(
-                    String.format(ERROR_COLUMN_NUMBER_OUT_OF_RANGE, MAXIMUM_COLUMN_INDEX))
+                    String.format(ERROR_COLUMN_NUMBER_OUT_OF_RANGE, board.maxColumnIndex))
         }
     }
 
     private fun checkIfColumnFull(col: Int) {
-        if (board.grid[MAXIMUM_ROW_INDEX][col] != Spot.EMPTY) {
+        if (board.grid[board.maxRowIndex][col] != Spot.EMPTY) {
             throw IllegalArgumentException(
                     String.format(ERROR_COLUMN_FULL, col))
         }
     }
 
     private fun updateBoard(col: Int, isBot: Boolean = false) {
-        for (row in MINIMUM_ROW_INDEX..MAXIMUM_ROW_INDEX) {
+        for (row in board.minRowIndex..board.maxRowIndex) {
             if (board.grid[row][col] == Spot.EMPTY) {
                 if (isBot) {
                     board.grid[row][col] = Spot.BOT
@@ -112,16 +106,17 @@ class GameController {
     }
 
     private fun updateBoardByBot() {
+        println("Bot is thinking...")
+        Thread.sleep(3000)
         val col = pickRandomNonEmptyColumn()
         updateBoard(col, isBot = true)
-        Thread.sleep(3000)
     }
 
     private fun getNonEmptyColumns(): List<Int> {
         val nonEmptyCols = mutableListOf<Int>()
 
-        for (col in MINIMUM_COLUMN_INDEX..MAXIMUM_COLUMN_INDEX) {
-            if (board.grid[MAXIMUM_ROW_INDEX][col] == Spot.EMPTY) {
+        for (col in board.minColumnIndex..board.maxColumnIndex) {
+            if (board.grid[board.maxRowIndex][col] == Spot.EMPTY) {
                 nonEmptyCols.add(col)
             }
         }
@@ -135,7 +130,7 @@ class GameController {
         if (nonEmptyCols.isEmpty()) {
             throw IllegalArgumentException(ERROR_ALL_COLUMNS_FULL)
         } else {
-            val randomIndex = (MINIMUM_COLUMN_INDEX until nonEmptyCols.size).shuffled().last()
+            val randomIndex = (board.minColumnIndex until nonEmptyCols.size).shuffled().last()
             return nonEmptyCols[randomIndex]
         }
     }
