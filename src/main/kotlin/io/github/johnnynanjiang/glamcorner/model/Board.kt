@@ -6,7 +6,7 @@ enum class Spot(val text: String = " ") {
     BOT("-")
 }
 
-data class Board(val column: Int, val row: Int) {
+data class Board(val row: Int, val column: Int) {
     val grid = Array(row) { Array(column) { Spot.EMPTY } }
 
     val minRowIndex

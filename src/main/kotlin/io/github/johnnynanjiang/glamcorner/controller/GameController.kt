@@ -19,9 +19,22 @@ class GameController {
         private const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
     }
 
-    private val board = Board(column = 7, row = 6)
+    private val board = Board(row = 6, column = 7)
 
     fun run() {
+        val grid = board.grid
+        grid[0][0] = Spot.PLAYER
+        grid[1][1] = Spot.BOT
+        grid[2][0] = Spot.PLAYER
+        grid[2][1] = Spot.PLAYER
+        grid[2][2] = Spot.PLAYER
+        grid[2][3] = Spot.PLAYER
+        grid[2][4] = Spot.PLAYER
+        grid[2][5] = Spot.BOT
+        grid[3][0] = Spot.BOT
+        grid[3][1] = Spot.PLAYER
+        grid[4][2] = Spot.PLAYER
+
         var quit = false
 
         draw()
