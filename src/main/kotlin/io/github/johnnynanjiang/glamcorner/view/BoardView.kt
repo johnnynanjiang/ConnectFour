@@ -13,6 +13,12 @@ class BoardView(val board: Board) {
                 }
                 println("|") // print right border
             }
+
+            // print indicators
+            for (row in 0..row) {
+                print(String.format(" %d", row))
+            }
+            println()
         }
     }
 }

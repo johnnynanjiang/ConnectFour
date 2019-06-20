@@ -1,5 +1,6 @@
 package io.github.johnnynanjiang.glamcorner.controller
 
+import io.github.johnnynanjiang.glamcorner.helper.Judge
 import io.github.johnnynanjiang.glamcorner.model.*
 import io.github.johnnynanjiang.glamcorner.view.BoardView
 import java.lang.IllegalArgumentException
@@ -12,6 +13,7 @@ class GameController {
 - type h for this help
 """
         private const val TEXT_QUIT = "Quit the game!"
+        private const val TEXT_WINNING = "Someone won the game!"
 
         private const val ERROR_INVALID_COLUMN = "Input should be a valid integer between 0 and %s"
         private const val ERROR_COLUMN_NUMBER_OUT_OF_RANGE = "Column number out of range, should be between 0 and %s"
@@ -22,19 +24,6 @@ class GameController {
     private val board = Board(row = 6, column = 7)
 
     fun run() {
-        val grid = board.grid
-        grid[0][0] = Spot.PLAYER
-        grid[1][1] = Spot.BOT
-        grid[2][0] = Spot.PLAYER
-        grid[2][1] = Spot.PLAYER
-        grid[2][2] = Spot.PLAYER
-        grid[2][3] = Spot.PLAYER
-        grid[2][4] = Spot.PLAYER
-        grid[2][5] = Spot.BOT
-        grid[3][0] = Spot.BOT
-        grid[3][1] = Spot.PLAYER
-        grid[4][2] = Spot.PLAYER
-
         var quit = false
 
         draw()
@@ -50,17 +39,18 @@ class GameController {
                 "h" -> {
                     println(TEXT_HELP)
                 }
-                else -> input?.let { performAction(it) }
+                else -> input?.let { quit = performAction(it) }
             }
         } while (!quit)
     }
 
-    private fun performAction(input: String) {
+    private fun performAction(input: String): Boolean {
         val col = validate(input)
-        updateBoard(col)
-        draw()
+        dropInColumn(col)
+        if (draw()) return true
         updateBoardByBot()
-        draw()
+        if (draw()) return true
+        return false
     }
 
     private fun validate(input: String): Int {
@@ -70,14 +60,23 @@ class GameController {
         return col
     }
 
-    private fun draw() = BoardView(board = board).draw()
+    private fun draw(): Boolean {
+        BoardView(board = board).draw()
+
+        val winner = Judge(board).getWinner()
+        if (winner != null) {
+            println(TEXT_WINNING)
+            return true
+        }
+
+        return false
+    }
 
     private fun promptForPlayerInput(): String {
-        println("")
+        println()
         println("Waiting for command(type in 'h' for help):")
 
         val input = readLine()
-        println("Input: $input")
 
         return input ?: ""
     }
@@ -104,7 +103,7 @@ class GameController {
         }
     }
 
-    private fun updateBoard(col: Int, isBot: Boolean = false) {
+    private fun dropInColumn(col: Int, isBot: Boolean = false) {
         for (row in board.minRowIndex..board.maxRowIndex) {
             if (board.grid[row][col] == Spot.EMPTY) {
                 if (isBot) {
@@ -112,17 +111,17 @@ class GameController {
                 } else {
                     board.grid[row][col] = Spot.PLAYER
                 }
-
                 return
             }
         }
     }
 
     private fun updateBoardByBot() {
+        println()
         println("Bot is thinking...")
-        Thread.sleep(3000)
+        Thread.sleep(1000)
         val col = pickRandomNonEmptyColumn()
-        updateBoard(col, isBot = true)
+        dropInColumn(col, isBot = true)
     }
 
     private fun getNonEmptyColumns(): List<Int> {

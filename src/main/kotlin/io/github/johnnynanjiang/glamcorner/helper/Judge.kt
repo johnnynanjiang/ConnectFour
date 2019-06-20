@@ -17,17 +17,24 @@ class Judge(val board: Board) {
         const val WINNING_NUMBER = 4
     }
 
-    fun judgeWhoWins() {
+    fun getWinner(): Coordinate? {
         for (row in board.minRowIndex..board.maxRowIndex) {
             for (col in board.minColumnIndex..board.maxColumnIndex) {
                 val currentCoordinate = Coordinate(row, col, board.grid[row][col])
-
+                if (canCoordinateWin(currentCoordinate)) {
+                    return currentCoordinate
+                }
             }
         }
+        return null
     }
 
-    fun canCoordinateWin(coordinate: Coordinate) {
+    fun canCoordinateWin(coordinate: Coordinate): Boolean {
+        for (direction in Direction.values()) {
+            if (getNumberInDirection(coordinate, direction) >= WINNING_NUMBER) return true
+        }
 
+        return false
     }
 
     fun getNumberInDirection(coordinate: Coordinate, direction: Direction): Int {
@@ -36,7 +43,7 @@ class Judge(val board: Board) {
         for (offset in listOf(direction.offsetUp, direction.offsetDown)) {
             var nextCoordinate = getNextCoordinate(coordinate, offset)
             while (nextCoordinate != null) {
-                if (nextCoordinate.spot == coordinate.spot) {
+                if (nextCoordinate.spot == coordinate.spot && nextCoordinate.spot != Spot.EMPTY) {
                     ++total
                     nextCoordinate = getNextCoordinate(nextCoordinate, offset)
                 } else {
@@ -53,7 +60,7 @@ class Judge(val board: Board) {
         val nextColIndex = coordinate.col + offset.col
 
         if (nextRowIndex < board.minRowIndex || nextRowIndex > board.maxRowIndex) return null
-        if (nextColIndex < board.minRowIndex || nextColIndex > board.maxRowIndex) return null
+        if (nextColIndex < board.minColumnIndex || nextColIndex > board.maxColumnIndex) return null
 
         return Coordinate(nextRowIndex, nextColIndex, board.grid[nextRowIndex][nextColIndex])
     }
