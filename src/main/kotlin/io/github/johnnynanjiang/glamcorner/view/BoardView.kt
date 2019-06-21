@@ -8,19 +8,19 @@ class BoardView(val board: Board) {
 
         with(board) {
             // print rows
-            for (row in (row - 1).downTo(0)) {
+            for (_row in (maxRowIndex).downTo(minRowIndex)) {
                 // print columns
-                for (col in 0 until column) {
+                for (_col in minColumnIndex..maxColumnIndex) {
                     // print column
-                    output.append(String.format("|%s", grid[row][col].symbol))
+                    output.append(String.format("|%s", grid[_row][_col].symbol))
                 }
                 // print right border
                 output.append("|\n")
             }
 
             // print column indicators
-            for (row in 0..row) {
-                output.append(String.format(" %d", row))
+            for (_col in minColumnIndex..maxColumnIndex) {
+                output.append(String.format(" %d", _col))
             }
             output.append("\n")
         }

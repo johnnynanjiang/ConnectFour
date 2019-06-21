@@ -19,13 +19,14 @@ class ConnectFour {
         val playersForNormalMode = listOf(HUMAN_PLAYER_1, BOT_PLAYER_1)
         val playersForBothHumans = listOf(HUMAN_PLAYER_1, HUMAN_PLAYER_2)
         val playersForBothBots = listOf(BOT_PLAYER_1, BOT_PLAYER_2)
+        val playersFoursome = listOf(HUMAN_PLAYER_1, HUMAN_PLAYER_2, BOT_PLAYER_1, BOT_PLAYER_2)
 
         // TODO: DI could kick in here, leave it for now for the sake of simplicity and minimum dependency
         GameController(
                 board = board,
                 boardManager = boardManager,
                 inputValidator = inputValidator,
-                players = playersForBothBots
+                players = playersForNormalMode
         ).run()
     }
 }
