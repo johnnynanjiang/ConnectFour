@@ -1,6 +1,7 @@
 package io.github.johnnynanjiang.glamcorner.controller
 
 import io.github.johnnynanjiang.glamcorner.domain.InputValidator
+import io.github.johnnynanjiang.glamcorner.domain.InvalidInputException
 import io.github.johnnynanjiang.glamcorner.domain.Judge
 import io.github.johnnynanjiang.glamcorner.domain.convertStringToInt
 import io.github.johnnynanjiang.glamcorner.model.*
@@ -9,16 +10,21 @@ import java.lang.IllegalArgumentException
 
 class GameController {
     private companion object {
-        const val TEXT_HELP =
+        const val MESSAGE_HELP =
 """
 - type in column number straight away, e.g. 1
 - type q to quit the game
 - type h for this help
 """
-        const val TEXT_QUIT = "Quit the game!"
-        const val TEXT_WINNING = "Someone won the game!"
+        const val MESSAGE_QUIT = "\nQuit the game!\n"
+        const val MESSAGE_WINNING = "Someone won the game!"
+        const val MESSAGE_PROMPT = "Type a column number to drop in (type 'h' for help), valid columns are:"
+        const val MESSAGE_BOT = "\nBot is thinking...\n"
 
         const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
+
+        const val COMMAND_QUIT = "q"
+        const val COMMAND_HELP = "h"
     }
 
     private val board = Board(row = 6, column = 7)
@@ -34,46 +40,63 @@ class GameController {
             var input = promptForPlayerInput()
 
             when (input) {
-                "q" -> {
+                COMMAND_QUIT -> {
                     quit = true
-                    println(TEXT_QUIT)
+                    println(MESSAGE_QUIT)
                 }
-                "h" -> {
-                    println(TEXT_HELP)
+                COMMAND_HELP -> {
+                    println(MESSAGE_HELP)
                 }
                 else -> input?.let {
-                    quit = performAction(it)
+                    quit = executeCommand(it)
                 }
             }
         } while (!quit)
     }
 
-    private fun performAction(input: String): Boolean {
-        inputValidator.validate(input)
+    private fun printInConsole(message: String) = println(message)
+
+    private fun executeCommand(input: String): Boolean {
+        var quit = false
+
+        try {
+            inputValidator.validate(input)
+        } catch (e: InvalidInputException) {
+            printInConsole(e.message)
+            return quit
+        }
 
         val col = convertStringToInt(input)
         dropInColumn(col)
-        if (draw()) return true
+
+        quit = draw()
+        if (quit) return quit
+
         updateBoardByBot()
-        if (draw()) return true
-        return false
+
+        quit = draw()
+        if (quit) return quit
+
+        return quit
     }
 
     private fun draw(): Boolean {
+        var quit = false
+
         println(boardView.draw())
 
         val winner = Judge(board).getWinner()
         if (winner != null) {
-            println(TEXT_WINNING)
-            return true
+            println(MESSAGE_WINNING)
+            quit = true
         }
 
-        return false
+        return quit
     }
 
     private fun promptForPlayerInput(): String {
-        println()
-        println("Waiting for command(type in 'h' for help):")
+        val nonFullColumns = getNonFullColumns()
+        println(MESSAGE_PROMPT + nonFullColumns.toString())
 
         val input = readLine()
 
@@ -94,14 +117,13 @@ class GameController {
     }
 
     private fun updateBoardByBot() {
-        println()
-        println("Bot is thinking...")
+        println(MESSAGE_BOT)
         Thread.sleep(1000)
-        val col = pickRandomNonEmptyColumn()
+        val col = pickRandomNonFullColumn()
         dropInColumn(col, isBot = true)
     }
 
-    private fun getNonEmptyColumns(): List<Int> {
+    private fun getNonFullColumns(): List<Int> {
         val nonEmptyCols = mutableListOf<Int>()
 
         for (col in board.minColumnIndex..board.maxColumnIndex) {
@@ -113,14 +135,14 @@ class GameController {
         return nonEmptyCols
     }
 
-    private fun pickRandomNonEmptyColumn(): Int {
-        val nonEmptyCols = getNonEmptyColumns()
+    private fun pickRandomNonFullColumn(): Int {
+        val nonFullCols = getNonFullColumns()
 
-        if (nonEmptyCols.isEmpty()) {
+        if (nonFullCols.isEmpty()) {
             throw IllegalArgumentException(ERROR_ALL_COLUMNS_FULL)
         } else {
-            val randomIndex = (board.minColumnIndex until nonEmptyCols.size).shuffled().last()
-            return nonEmptyCols[randomIndex]
+            val randomIndex = (board.minColumnIndex until nonFullCols.size).shuffled().last()
+            return nonFullCols[randomIndex]
         }
     }
 }

@@ -42,7 +42,7 @@ class JudgeTest {
     fun getNumberOfSpotsInDirection() {
         assertEquals(1, judge.getNumberInDirection(Coordinate(row = 2, col = 5, spot = Spot.BOT), direction = Direction.HORIZONTAL))
         assertEquals(4, judge.getNumberInDirection(Coordinate(row = 2, col = 5, spot = Spot.BOT), direction = Direction.VERTICAL))
-        assertEquals(4, judge.getNumberInDirection(Coordinate(row = 2, col = 5, spot = Spot.BOT), direction = Direction.BACKWARD_SLASH))
+        assertEquals(5, judge.getNumberInDirection(Coordinate(row = 2, col = 5, spot = Spot.BOT), direction = Direction.BACKWARD_SLASH))
         assertEquals(4, judge.getNumberInDirection(Coordinate(row = 2, col = 5, spot = Spot.BOT), direction = Direction.FORWARD_SLASH))
 
         assertEquals(5, judge.getNumberInDirection(Coordinate(row = 2, col = 0, spot = Spot.PLAYER), direction = Direction.HORIZONTAL))

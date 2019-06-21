@@ -1,7 +1,12 @@
 # ConnectFour
 
-## Run the application
+### Setup
+
+##### Install Gradle
+`brew install gradle`
+
+##### Run the application
 `./gradlew run`
 
-## Run tests
+##### Run tests
 `./gradlew test`
