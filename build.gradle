@@ -37,3 +37,7 @@ sourceSets {
 
 apply plugin: 'application'
 mainClassName = "io.github.johnnynanjiang.glamcorner.ConnectFourKt"
+
+run {
+    standardInput = System.in
+}

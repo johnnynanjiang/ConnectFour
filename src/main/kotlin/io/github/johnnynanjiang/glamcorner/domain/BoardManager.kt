@@ -42,6 +42,6 @@ class BoardManager(val board: Board) {
     }
 
     fun pickAColumnThatWillKillTheOpponent(): Int {
-        return 0
+        return (board.minColumnIndex until board.maxColumnIndex).shuffled().last()
     }
 }

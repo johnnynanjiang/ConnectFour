@@ -25,7 +25,7 @@ class ConnectFour {
                 board = board,
                 boardManager = boardManager,
                 inputValidator = inputValidator,
-                players = playersForNormalMode
+                players = playersForBothBots
         ).run()
     }
 }

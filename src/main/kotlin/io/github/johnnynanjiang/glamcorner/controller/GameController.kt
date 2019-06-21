@@ -10,8 +10,8 @@ class GameController(val board: Board,
                      val players: List<Player>) {
     companion object {
         private const val MESSAGE_QUIT = "\nQuit the game!\n"
-        private const val MESSAGE_WINNING = "Congrats player [%s] for winning the game!"
-        private const val MESSAGE_PROMPT = "Hi player [%s], please type a column number to drop in (type 'h' for help), valid columns are:"
+        private const val MESSAGE_WINNING = "Congrats player [%s] on winning the game!"
+        private const val MESSAGE_PROMPT = "Hi player [%s], please type a column number to drop in (type 'h' for help), valid columns are "
         private const val MESSAGE_HELP =
                 """
 - type in column number straight away, e.g. 1
@@ -53,7 +53,7 @@ class GameController(val board: Board,
     private fun printInConsole(message: String) = println(message)
 
     private fun executeCommand(input: String): Boolean {
-        var quit = false
+        var quit: Boolean
 
         try {
             inputValidator.validate(input)
@@ -99,8 +99,8 @@ class GameController(val board: Board,
     }
 
     private fun promptForInput() {
-        val nonFullColumns = boardManager.getAvailableColumns()
-        println(String.format(MESSAGE_PROMPT, getPlayerWithToken().symbol) + nonFullColumns.toString())
+        val availableCols = boardManager.getAvailableColumns()
+        println(String.format(MESSAGE_PROMPT, getPlayerWithToken().symbol) + availableCols.toString())
     }
 
     private fun getInputFromPlayer(): String = getPlayerWithToken().getInput()

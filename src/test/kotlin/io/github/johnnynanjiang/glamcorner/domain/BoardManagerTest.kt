@@ -1,7 +1,8 @@
 package io.github.johnnynanjiang.glamcorner.domain
 
+import io.github.johnnynanjiang.glamcorner.fixture.TEST_HUMAN_PLAYER
 import io.github.johnnynanjiang.glamcorner.fixture.buildBoard
-import io.github.johnnynanjiang.glamcorner.model.Player
+import io.github.johnnynanjiang.glamcorner.model.EMPTY_PLAYER
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -34,6 +35,10 @@ class BoardManagerTest {
 
     @Test
     fun shouldBeAbleToDropInAColumnForAPlayer() {
-        //val player = Player()
+        assertEquals(EMPTY_PLAYER, boardManager.board.grid[4][5])
+
+        boardManager.dropInColumnForPlayer(5, TEST_HUMAN_PLAYER)
+
+        assertEquals(TEST_HUMAN_PLAYER, boardManager.board.grid[4][5])
     }
 }
