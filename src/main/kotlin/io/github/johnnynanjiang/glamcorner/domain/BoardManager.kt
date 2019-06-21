@@ -1,6 +1,7 @@
 package io.github.johnnynanjiang.glamcorner.domain
 
 import io.github.johnnynanjiang.glamcorner.model.Board
+import io.github.johnnynanjiang.glamcorner.model.EMPTY_PLAYER
 import io.github.johnnynanjiang.glamcorner.model.Player
 
 class BoardManager(val board: Board) {
@@ -8,14 +9,10 @@ class BoardManager(val board: Board) {
         const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
     }
 
-    fun dropInColumn(col: Int, isBot: Boolean = false) {
+    fun dropInColumnForPlayer(col: Int, player: Player) {
         for (row in board.minRowIndex..board.maxRowIndex) {
-            if (board.grid[row][col] == Player.EMPTY) {
-                if (isBot) {
-                    board.grid[row][col] = Player.BOT_PLAYER_1
-                } else {
-                    board.grid[row][col] = Player.HUMAN_PLAYER_1
-                }
+            if (board.grid[row][col] == EMPTY_PLAYER) {
+                board.grid[row][col] = player
                 return
             }
         }
@@ -25,7 +22,7 @@ class BoardManager(val board: Board) {
         val availableCols = mutableListOf<Int>()
 
         for (col in board.minColumnIndex..board.maxColumnIndex) {
-            if (board.grid[board.maxRowIndex][col] == Player.EMPTY) {
+            if (board.grid[board.maxRowIndex][col] == EMPTY_PLAYER) {
                 availableCols.add(col)
             }
         }
@@ -42,5 +39,9 @@ class BoardManager(val board: Board) {
             val randomIndex = (board.minColumnIndex until availableCols.size).shuffled().last()
             return availableCols[randomIndex]
         }
+    }
+
+    fun pickAColumnThatWillKillTheOpponent(): Int {
+        return 0
     }
 }

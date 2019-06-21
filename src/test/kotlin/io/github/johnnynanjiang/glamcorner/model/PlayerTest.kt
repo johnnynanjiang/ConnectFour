@@ -1,15 +1,16 @@
 package io.github.johnnynanjiang.glamcorner.model
 
+import io.github.johnnynanjiang.glamcorner.domain.HumanPlayerStrategy
+import io.github.johnnynanjiang.glamcorner.domain.NoStrategy
 import org.junit.Assert.*
 import org.junit.Test
 
 class PlayerTest {
     @Test
-    fun shouldHaveCorrectSymbols() {
-        assertEquals(" ", Player.EMPTY.symbol)
-        assertEquals("*", Player.HUMAN_PLAYER_1.symbol)
-        assertEquals("#", Player.HUMAN_PLAYER_2.symbol)
-        assertEquals("-", Player.BOT_PLAYER_1.symbol)
-        assertEquals("x", Player.BOT_PLAYER_2.symbol)
+    fun playersWithSameSymbolShouldBeEqual() {
+        val player1 = Player("symbol", NoStrategy())
+        val player2 = Player("symbol", HumanPlayerStrategy())
+
+        assertTrue(player1 == player2)
     }
 }

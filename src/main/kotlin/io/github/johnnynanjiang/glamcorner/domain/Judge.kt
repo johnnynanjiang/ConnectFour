@@ -1,9 +1,10 @@
 package io.github.johnnynanjiang.glamcorner.domain
 
 import io.github.johnnynanjiang.glamcorner.model.Board
+import io.github.johnnynanjiang.glamcorner.model.EMPTY_PLAYER
 import io.github.johnnynanjiang.glamcorner.model.Player
 
-data class Coordinate(val row: Int, val col: Int, val spot: Player = Player.EMPTY)
+data class Coordinate(val row: Int, val col: Int, val spot: Player = EMPTY_PLAYER)
 
 data class Offset(val row: Int, val col: Int)
 
@@ -45,7 +46,7 @@ class Judge(val board: Board) {
         for (offset in listOf(direction.offsetUp, direction.offsetDown)) {
             var nextCoordinate = getNextCoordinateByOffset(coordinate, offset)
             while (nextCoordinate != null) {
-                if (nextCoordinate.spot == coordinate.spot && nextCoordinate.spot != Player.EMPTY) {
+                if (nextCoordinate.spot == coordinate.spot && nextCoordinate.spot != EMPTY_PLAYER) {
                     ++total
                     nextCoordinate = getNextCoordinateByOffset(nextCoordinate, offset)
                 } else {

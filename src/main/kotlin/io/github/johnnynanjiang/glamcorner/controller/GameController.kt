@@ -8,20 +8,19 @@ class GameController(val board: Board,
                      val boardManager: BoardManager,
                      val inputValidator: InputValidator,
                      val players: List<Player>) {
-    private companion object {
-        const val MESSAGE_HELP =
-"""
+    companion object {
+        private const val MESSAGE_QUIT = "\nQuit the game!\n"
+        private const val MESSAGE_WINNING = "Congrats player [%s] for winning the game!"
+        private const val MESSAGE_PROMPT = "Hi player [%s], please type a column number to drop in (type 'h' for help), valid columns are:"
+        private const val MESSAGE_HELP =
+                """
 - type in column number straight away, e.g. 1
 - type q to quit the game
 - type h for this help
 """
-        const val MESSAGE_QUIT = "\nQuit the game!\n"
-        const val MESSAGE_WINNING = "Someone won the game!"
-        const val MESSAGE_PROMPT = "Type a column number to drop in (type 'h' for help), valid columns are:"
-        const val MESSAGE_BOT = "\nBot is thinking...\n"
 
-        const val COMMAND_QUIT = "q"
         const val COMMAND_HELP = "h"
+        const val COMMAND_QUIT = "q"
     }
 
     private val boardView = BoardView(board = board)
@@ -33,7 +32,8 @@ class GameController(val board: Board,
         draw()
 
         do {
-            var input = promptForPlayerInput()
+            promptForInput()
+            var input = getInputFromPlayer()
 
             when (input) {
                 COMMAND_QUIT -> {
@@ -68,17 +68,20 @@ class GameController(val board: Board,
         }
 
         val col = convertStringToInt(input)
-        boardManager.dropInColumn(col)
+        boardManager.dropInColumnForPlayer(col, getPlayerWithToken())
 
         quit = draw()
         if (quit) return quit
 
-        updateBoardByBot()
-
-        quit = draw()
-        if (quit) return quit
+        passTokenToNextPlayer()
 
         return quit
+    }
+
+    private fun getPlayerWithToken() = players[playerToken]
+
+    private fun passTokenToNextPlayer() {
+        playerToken = ++playerToken % players.size
     }
 
     private fun draw(): Boolean {
@@ -88,26 +91,17 @@ class GameController(val board: Board,
 
         val winner = Judge(board).getWinner()
         if (winner != null) {
-            println(MESSAGE_WINNING)
+            println(String.format(MESSAGE_WINNING, getPlayerWithToken().symbol))
             quit = true
         }
 
         return quit
     }
 
-    private fun promptForPlayerInput(): String {
+    private fun promptForInput() {
         val nonFullColumns = boardManager.getAvailableColumns()
-        println(MESSAGE_PROMPT + nonFullColumns.toString())
-
-        val input = readLine()
-
-        return input ?: ""
+        println(String.format(MESSAGE_PROMPT, getPlayerWithToken().symbol) + nonFullColumns.toString())
     }
 
-    private fun updateBoardByBot() {
-        println(MESSAGE_BOT)
-        Thread.sleep(1000)
-        val col = boardManager.pickARandomAvailableColumn()
-        boardManager.dropInColumn(col, isBot = true)
-    }
+    private fun getInputFromPlayer(): String = getPlayerWithToken().getInput()
 }

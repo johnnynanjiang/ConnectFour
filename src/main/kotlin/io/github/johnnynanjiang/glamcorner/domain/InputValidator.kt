@@ -1,7 +1,7 @@
 package io.github.johnnynanjiang.glamcorner.domain
 
 import io.github.johnnynanjiang.glamcorner.model.Board
-import io.github.johnnynanjiang.glamcorner.model.Player
+import io.github.johnnynanjiang.glamcorner.model.EMPTY_PLAYER
 
 fun convertStringToInt(str: String) = str.toInt()
 
@@ -28,7 +28,7 @@ class InputValidator(val board: Board) {
     }
 
     private fun checkIfColumnFull(col: Int) {
-        if (board.grid[board.maxRowIndex][col] != Player.EMPTY) {
+        if (board.grid[board.maxRowIndex][col] != EMPTY_PLAYER) {
             throw InvalidInputException(String.format(ERROR_COLUMN_FULL, col))
         }
     }
