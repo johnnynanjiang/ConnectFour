@@ -1,14 +1,13 @@
 package io.github.johnnynanjiang.glamcorner.controller
 
-import io.github.johnnynanjiang.glamcorner.domain.InputValidator
-import io.github.johnnynanjiang.glamcorner.domain.InvalidInputException
-import io.github.johnnynanjiang.glamcorner.domain.Judge
-import io.github.johnnynanjiang.glamcorner.domain.convertStringToInt
+import io.github.johnnynanjiang.glamcorner.domain.*
 import io.github.johnnynanjiang.glamcorner.model.*
 import io.github.johnnynanjiang.glamcorner.view.BoardView
-import java.lang.IllegalArgumentException
 
-class GameController {
+class GameController(val board: Board,
+                     val boardManager: BoardManager,
+                     val inputValidator: InputValidator,
+                     val players: List<Player>) {
     private companion object {
         const val MESSAGE_HELP =
 """
@@ -21,15 +20,12 @@ class GameController {
         const val MESSAGE_PROMPT = "Type a column number to drop in (type 'h' for help), valid columns are:"
         const val MESSAGE_BOT = "\nBot is thinking...\n"
 
-        const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
-
         const val COMMAND_QUIT = "q"
         const val COMMAND_HELP = "h"
     }
 
-    private val board = Board(row = 6, column = 7)
     private val boardView = BoardView(board = board)
-    private val inputValidator = InputValidator(board = board)
+    private var playerToken = 0
 
     fun run() {
         var quit = false
@@ -63,11 +59,16 @@ class GameController {
             inputValidator.validate(input)
         } catch (e: InvalidInputException) {
             printInConsole(e.message)
+            quit = false
+            return quit
+        } catch (e: InvalidBoardStatusException) {
+            printInConsole(e.message)
+            quit = true
             return quit
         }
 
         val col = convertStringToInt(input)
-        dropInColumn(col)
+        boardManager.dropInColumn(col)
 
         quit = draw()
         if (quit) return quit
@@ -95,7 +96,7 @@ class GameController {
     }
 
     private fun promptForPlayerInput(): String {
-        val nonFullColumns = getNonFullColumns()
+        val nonFullColumns = boardManager.getAvailableColumns()
         println(MESSAGE_PROMPT + nonFullColumns.toString())
 
         val input = readLine()
@@ -103,46 +104,10 @@ class GameController {
         return input ?: ""
     }
 
-    private fun dropInColumn(col: Int, isBot: Boolean = false) {
-        for (row in board.minRowIndex..board.maxRowIndex) {
-            if (board.grid[row][col] == Spot.EMPTY) {
-                if (isBot) {
-                    board.grid[row][col] = Spot.BOT
-                } else {
-                    board.grid[row][col] = Spot.PLAYER
-                }
-                return
-            }
-        }
-    }
-
     private fun updateBoardByBot() {
         println(MESSAGE_BOT)
         Thread.sleep(1000)
-        val col = pickRandomNonFullColumn()
-        dropInColumn(col, isBot = true)
-    }
-
-    private fun getNonFullColumns(): List<Int> {
-        val nonEmptyCols = mutableListOf<Int>()
-
-        for (col in board.minColumnIndex..board.maxColumnIndex) {
-            if (board.grid[board.maxRowIndex][col] == Spot.EMPTY) {
-                nonEmptyCols.add(col)
-            }
-        }
-
-        return nonEmptyCols
-    }
-
-    private fun pickRandomNonFullColumn(): Int {
-        val nonFullCols = getNonFullColumns()
-
-        if (nonFullCols.isEmpty()) {
-            throw IllegalArgumentException(ERROR_ALL_COLUMNS_FULL)
-        } else {
-            val randomIndex = (board.minColumnIndex until nonFullCols.size).shuffled().last()
-            return nonFullCols[randomIndex]
-        }
+        val col = boardManager.pickARandomAvailableColumn()
+        boardManager.dropInColumn(col, isBot = true)
     }
 }

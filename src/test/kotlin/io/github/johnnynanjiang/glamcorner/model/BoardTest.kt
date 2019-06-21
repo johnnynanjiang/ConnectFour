@@ -29,6 +29,6 @@ class BoardTest {
 
     @Test
     fun boardShouldHaveCorrectDefaultSpotValue() {
-        assertEquals(Spot.EMPTY, board.grid[5][0])
+        assertEquals(Player.EMPTY, board.grid[5][0])
     }
 }

@@ -1,7 +1,7 @@
 package io.github.johnnynanjiang.glamcorner.model
 
 data class Board(val row: Int, val column: Int) {
-    val grid = Array(row) { Array(column) { Spot.EMPTY } }
+    val grid = Array(row) { Array(column) { Player.EMPTY } }
 
     val minRowIndex
         get() = 0

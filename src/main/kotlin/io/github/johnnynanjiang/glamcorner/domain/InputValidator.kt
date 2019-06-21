@@ -1,10 +1,7 @@
 package io.github.johnnynanjiang.glamcorner.domain
 
 import io.github.johnnynanjiang.glamcorner.model.Board
-import io.github.johnnynanjiang.glamcorner.model.Spot
-import java.lang.RuntimeException
-
-class InvalidInputException(override val message: String) : RuntimeException(message)
+import io.github.johnnynanjiang.glamcorner.model.Player
 
 fun convertStringToInt(str: String) = str.toInt()
 
@@ -31,7 +28,7 @@ class InputValidator(val board: Board) {
     }
 
     private fun checkIfColumnFull(col: Int) {
-        if (board.grid[board.maxRowIndex][col] != Spot.EMPTY) {
+        if (board.grid[board.maxRowIndex][col] != Player.EMPTY) {
             throw InvalidInputException(String.format(ERROR_COLUMN_FULL, col))
         }
     }
