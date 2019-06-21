@@ -1,5 +1,6 @@
-package io.github.johnnynanjiang.glamcorner.helper
+package io.github.johnnynanjiang.glamcorner.domain
 
+import io.github.johnnynanjiang.glamcorner.fixture.buildBoard
 import io.github.johnnynanjiang.glamcorner.model.Board
 import io.github.johnnynanjiang.glamcorner.model.Spot
 import org.junit.Assert.*
@@ -12,59 +13,29 @@ class JudgeTest {
 
     @Before
     fun setUp() {
-        board = Board(6, 7)
-        val grid = board.grid
-        grid[0][0] = Spot.PLAYER
-        grid[0][3] = Spot.BOT
-        grid[0][5] = Spot.BOT
-        grid[1][1] = Spot.BOT
-        grid[1][4] = Spot.BOT
-        grid[1][5] = Spot.BOT
-        grid[1][6] = Spot.BOT
-        grid[2][0] = Spot.PLAYER
-        grid[2][1] = Spot.PLAYER
-        grid[2][2] = Spot.PLAYER
-        grid[2][3] = Spot.PLAYER
-        grid[2][4] = Spot.PLAYER
-        grid[2][5] = Spot.BOT
-        grid[3][0] = Spot.BOT
-        grid[3][1] = Spot.PLAYER
-        grid[3][4] = Spot.BOT
-        grid[3][5] = Spot.BOT
-        grid[3][6] = Spot.BOT
-        grid[4][2] = Spot.PLAYER
-        grid[4][3] = Spot.BOT
-/*
-| | | | | | | |
-| | |*|-| | | |
-|-|*| | |-|-|-|
-|*|*|*|*|*|-| |
-| |-| | |-|-|-|
-|*| | |-| |-| |
-*/
-
+        board = buildBoard()
         judge = Judge(board = board)
     }
 
     @Test
     fun getNextCoordinate() {
-        assertEquals(Coordinate(2, 1, Spot.PLAYER), judge.getNextCoordinate(Coordinate(2, 2), Direction.HORIZONTAL.offsetUp))
-        assertEquals(Coordinate(2, 3, Spot.PLAYER), judge.getNextCoordinate(Coordinate(2, 2), Direction.HORIZONTAL.offsetDown))
-        assertEquals(Coordinate(3, 1, Spot.PLAYER), judge.getNextCoordinate(Coordinate(2, 2), Direction.BACKWARD_SLASH.offsetUp))
-        assertEquals(Coordinate(1, 3, Spot.EMPTY), judge.getNextCoordinate(Coordinate(2, 2), Direction.BACKWARD_SLASH.offsetDown))
-        assertEquals(Coordinate(3, 2, Spot.EMPTY), judge.getNextCoordinate(Coordinate(2, 2), Direction.VERTICAL.offsetUp))
-        assertEquals(Coordinate(1, 2, Spot.EMPTY), judge.getNextCoordinate(Coordinate(2, 2), Direction.VERTICAL.offsetDown))
-        assertEquals(Coordinate(3, 3, Spot.EMPTY), judge.getNextCoordinate(Coordinate(2, 2), Direction.FORWARD_SLASH.offsetUp))
-        assertEquals(Coordinate(1, 1, Spot.BOT), judge.getNextCoordinate(Coordinate(2, 2), Direction.FORWARD_SLASH.offsetDown))
+        assertEquals(Coordinate(2, 1, Spot.PLAYER), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.HORIZONTAL.offsetUp))
+        assertEquals(Coordinate(2, 3, Spot.PLAYER), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.HORIZONTAL.offsetDown))
+        assertEquals(Coordinate(3, 1, Spot.PLAYER), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.BACKWARD_SLASH.offsetUp))
+        assertEquals(Coordinate(1, 3, Spot.EMPTY), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.BACKWARD_SLASH.offsetDown))
+        assertEquals(Coordinate(3, 2, Spot.EMPTY), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.VERTICAL.offsetUp))
+        assertEquals(Coordinate(1, 2, Spot.EMPTY), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.VERTICAL.offsetDown))
+        assertEquals(Coordinate(3, 3, Spot.EMPTY), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.FORWARD_SLASH.offsetUp))
+        assertEquals(Coordinate(1, 1, Spot.BOT), judge.getNextCoordinateByOffset(Coordinate(2, 2), Direction.FORWARD_SLASH.offsetDown))
 
-        assertNull(judge.getNextCoordinate(Coordinate(5, 0, Spot.PLAYER), Direction.VERTICAL.offsetUp))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 0, Spot.PLAYER), Direction.VERTICAL.offsetDown))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 6, Spot.PLAYER), Direction.FORWARD_SLASH.offsetUp))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 6, Spot.PLAYER), Direction.FORWARD_SLASH.offsetDown))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 0, Spot.PLAYER), Direction.HORIZONTAL.offsetUp))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 6, Spot.PLAYER), Direction.HORIZONTAL.offsetDown))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 0, Spot.PLAYER), Direction.BACKWARD_SLASH.offsetUp))
-        assertNull(judge.getNextCoordinate(Coordinate(0, 0, Spot.PLAYER), Direction.BACKWARD_SLASH.offsetDown))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(5, 0, Spot.PLAYER), Direction.VERTICAL.offsetUp))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 0, Spot.PLAYER), Direction.VERTICAL.offsetDown))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 6, Spot.PLAYER), Direction.FORWARD_SLASH.offsetUp))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 6, Spot.PLAYER), Direction.FORWARD_SLASH.offsetDown))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 0, Spot.PLAYER), Direction.HORIZONTAL.offsetUp))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 6, Spot.PLAYER), Direction.HORIZONTAL.offsetDown))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 0, Spot.PLAYER), Direction.BACKWARD_SLASH.offsetUp))
+        assertNull(judge.getNextCoordinateByOffset(Coordinate(0, 0, Spot.PLAYER), Direction.BACKWARD_SLASH.offsetDown))
     }
 
     @Test

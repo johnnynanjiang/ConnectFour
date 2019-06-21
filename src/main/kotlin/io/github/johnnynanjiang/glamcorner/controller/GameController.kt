@@ -1,27 +1,29 @@
 package io.github.johnnynanjiang.glamcorner.controller
 
-import io.github.johnnynanjiang.glamcorner.helper.Judge
+import io.github.johnnynanjiang.glamcorner.domain.InputValidator
+import io.github.johnnynanjiang.glamcorner.domain.Judge
+import io.github.johnnynanjiang.glamcorner.domain.convertStringToInt
 import io.github.johnnynanjiang.glamcorner.model.*
 import io.github.johnnynanjiang.glamcorner.view.BoardView
 import java.lang.IllegalArgumentException
 
 class GameController {
-    companion object {
-        private const val TEXT_HELP = """
+    private companion object {
+        const val TEXT_HELP =
+"""
 - type in column number straight away, e.g. 1
 - type q to quit the game
 - type h for this help
 """
-        private const val TEXT_QUIT = "Quit the game!"
-        private const val TEXT_WINNING = "Someone won the game!"
+        const val TEXT_QUIT = "Quit the game!"
+        const val TEXT_WINNING = "Someone won the game!"
 
-        private const val ERROR_INVALID_COLUMN = "Input should be a valid integer between 0 and %s"
-        private const val ERROR_COLUMN_NUMBER_OUT_OF_RANGE = "Column number out of range, should be between 0 and %s"
-        private const val ERROR_COLUMN_FULL = "Column %s is full"
-        private const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
+        const val ERROR_ALL_COLUMNS_FULL = "All columns are full"
     }
 
     private val board = Board(row = 6, column = 7)
+    private val boardView = BoardView(board = board)
+    private val inputValidator = InputValidator(board = board)
 
     fun run() {
         var quit = false
@@ -39,13 +41,17 @@ class GameController {
                 "h" -> {
                     println(TEXT_HELP)
                 }
-                else -> input?.let { quit = performAction(it) }
+                else -> input?.let {
+                    quit = performAction(it)
+                }
             }
         } while (!quit)
     }
 
     private fun performAction(input: String): Boolean {
-        val col = validate(input)
+        inputValidator.validate(input)
+
+        val col = convertStringToInt(input)
         dropInColumn(col)
         if (draw()) return true
         updateBoardByBot()
@@ -53,15 +59,8 @@ class GameController {
         return false
     }
 
-    private fun validate(input: String): Int {
-        val col = checkIfValidInt(input)
-        checkIfOutOfRange(col)
-        checkIfColumnFull(col)
-        return col
-    }
-
     private fun draw(): Boolean {
-        BoardView(board = board).draw()
+        println(boardView.draw())
 
         val winner = Judge(board).getWinner()
         if (winner != null) {
@@ -79,28 +78,6 @@ class GameController {
         val input = readLine()
 
         return input ?: ""
-    }
-
-    private fun checkIfValidInt(input: String): Int =
-            try {
-                input.toInt()
-            } catch (e: NumberFormatException) {
-                throw IllegalArgumentException(
-                        String.format(ERROR_INVALID_COLUMN, board.maxColumnIndex))
-            }
-
-    private fun checkIfOutOfRange(col: Int) {
-        if (col < board.minColumnIndex || col > board.column) {
-            throw IllegalArgumentException(
-                    String.format(ERROR_COLUMN_NUMBER_OUT_OF_RANGE, board.maxColumnIndex))
-        }
-    }
-
-    private fun checkIfColumnFull(col: Int) {
-        if (board.grid[board.maxRowIndex][col] != Spot.EMPTY) {
-            throw IllegalArgumentException(
-                    String.format(ERROR_COLUMN_FULL, col))
-        }
     }
 
     private fun dropInColumn(col: Int, isBot: Boolean = false) {

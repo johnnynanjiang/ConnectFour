@@ -1,10 +1,12 @@
-package io.github.johnnynanjiang.glamcorner.helper
+package io.github.johnnynanjiang.glamcorner.domain
 
 import io.github.johnnynanjiang.glamcorner.model.Board
 import io.github.johnnynanjiang.glamcorner.model.Spot
 
 data class Coordinate(val row: Int, val col: Int, val spot: Spot = Spot.EMPTY)
+
 data class Offset(val row: Int, val col: Int)
+
 enum class Direction(val offsetUp: Offset, val offsetDown: Offset) {
     HORIZONTAL(offsetUp = Offset(row = 0, col = -1), offsetDown = Offset(row = 0, col = 1)),
     VERTICAL(offsetUp = Offset(row = 1, col = 0), offsetDown = Offset(row = -1, col = 0)),
@@ -41,11 +43,11 @@ class Judge(val board: Board) {
         var total = 1
 
         for (offset in listOf(direction.offsetUp, direction.offsetDown)) {
-            var nextCoordinate = getNextCoordinate(coordinate, offset)
+            var nextCoordinate = getNextCoordinateByOffset(coordinate, offset)
             while (nextCoordinate != null) {
                 if (nextCoordinate.spot == coordinate.spot && nextCoordinate.spot != Spot.EMPTY) {
                     ++total
-                    nextCoordinate = getNextCoordinate(nextCoordinate, offset)
+                    nextCoordinate = getNextCoordinateByOffset(nextCoordinate, offset)
                 } else {
                     break
                 }
@@ -55,7 +57,7 @@ class Judge(val board: Board) {
         return total
     }
 
-    fun getNextCoordinate(coordinate: Coordinate, offset: Offset): Coordinate? {
+    fun getNextCoordinateByOffset(coordinate: Coordinate, offset: Offset): Coordinate? {
         val nextRowIndex = coordinate.row + offset.row
         val nextColIndex = coordinate.col + offset.col
 
